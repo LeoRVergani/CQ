@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cartão Qualidade - Simulador de Descontos</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .info-box {
+            background: #e8f4fc;
+            padding: 15px;
+            border-left: 4px solid #3498db;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+        .input-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        input[type="date"], input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #2980b9;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 4px;
+            border-left: 4px solid #2ecc71;
+        }
+        .highlight {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+        .saldo {
+            font-size: 18px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Cartão Qualidade</h1>
+        <h2>Simulador de Descontos</h2>
+        
+        <div class="info-box">
+            <p>Entenda quando suas compras serão descontadas no salário:</p>
+            <ul>
+                <li><strong>Compras entre 21 e 05:</strong> Desconto no mesmo mês.</li>
+                <li><strong>Compras entre 06 e 20:</strong> Desconto no mês seguinte.</li>
+            </ul>
+        </div>
+
+        <div class="input-group">
+            <label for="compraData">Data da Compra:</label>
+            <input type="date" id="compraData">
+        </div>
+
+        <div class="input-group">
+            <label for="compraValor">Valor da Compra (R$):</label>
+            <input type="number" id="compraValor" min="1" value="100">
+        </div>
+
+        <button onclick="calcularDesconto()">Calcular Desconto</button>
+
+        <div class="result" id="resultado">
+            <p>Selecione uma data e um valor para simular.</p>
+        </div>
+
+        <div class="saldo" id="saldoInfo">
+            <p>Saldo Consignável Disponível: <span id="saldoDisponivel">R$ 1.000,00</span></p>
+        </div>
+    </div>
+
+    <script>
+        let saldoConsignavel = 1000;
+
+        function calcularDesconto() {
+            const dataCompra = new Date(document.getElementById("compraData").value);
+            const valorCompra = parseFloat(document.getElementById("compraValor").value);
+            
+            if (isNaN(dataCompra.getTime()) {
+                alert("Selecione uma data válida!");
+                return;
+            }
+
+            if (valorCompra <= 0 || valorCompra > saldoConsignavel) {
+                alert("Valor inválido ou acima do saldo disponível!");
+                return;
+            }
+
+            const diaCompra = dataCompra.getDate();
+            const mesCompra = dataCompra.getMonth() + 1; // Janeiro = 0
+            const anoCompra = dataCompra.getFullYear();
+
+            let descontoMes, descontoAno;
+            let reducaoSaldo = "Imediata";
+            let mensagem = "";
+
+            if (diaCompra >= 21 || diaCompra <= 5) {
+                // Desconto no mesmo mês
+                descontoMes = mesCompra;
+                descontoAno = anoCompra;
+                reducaoSaldo = "Imediata";
+                mensagem = `✅ <strong>Compra no dia ${diaCompra}/${mesCompra}</strong><br>
+                            - <span class="highlight">Saldo reduzido imediatamente.</span><br>
+                            - <span class="highlight">Desconto no contracheque de ${mesCompra}/${anoCompra}.</span>`;
+            } else {
+                // Desconto no mês seguinte
+                descontoMes = mesCompra + 1;
+                descontoAno = anoCompra;
+                if (descontoMes > 12) {
+                    descontoMes = 1;
+                    descontoAno++;
+                }
+                reducaoSaldo = `A partir do dia 21/${mesCompra}`;
+                mensagem = `📅 <strong>Compra no dia ${diaCompra}/${mesCompra}</strong><br>
+                            - <span class="highlight">Saldo reduzido a partir do dia 21/${mesCompra}.</span><br>
+                            - <span class="highlight">Desconto no contracheque de ${descontoMes}/${descontoAno}.</span>`;
+            }
+
+            // Atualiza o saldo
+            saldoConsignavel -= valorCompra;
+            document.getElementById("saldoDisponivel").textContent = `R$ ${saldoConsignavel.toFixed(2).replace('.', ',')}`;
+
+            // Mostra o resultado
+            document.getElementById("resultado").innerHTML = mensagem;
+        }
+    </script>
+</body>
+</html>
